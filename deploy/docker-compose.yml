@@ -1,0 +1,24 @@
+version: "3.8"
+services:
+  django:
+    build:
+      context: ../
+    volumes:
+      - ../:/django
+    depends_on:
+      - postgres
+    environment:
+      DJANGO_DEBUG: 1
+      DJANGO_DATABASE_NAME: django
+      DJANGO_DATABASE_USER: admin
+      DJANGO_DATABASE_PASSWORD: abc@1234
+      DJANGO_DATABASE_HOST: postgres
+  postgres:
+    image: postgres:11.8
+    environment:
+      POSTGRES_PASSWORD: abc@1234
+      POSTGRES_USER: admin
+      POSTGRES_DB: django
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ../../django-postgres:/var/lib/postgresql/data
