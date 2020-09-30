@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <nav class="navbar navbar-dark bg-dark sticky-top flex-md-nowrap p-0">
+    <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3" href="#">SR</a>
+    <ul class="navbar-nav px-3">
+      <li class="nav-item">
+        <a class="nav-link" src="#">Sign out</a>
+      </li>
+    </ul>
+  </nav>
+  <div class="container-fluid">
+    <div class="row">
+      <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+        <div class="sidebar-content">
+          <h6 class="px-3 mt-4 mb-1 text-muted">Entry</h6>
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link {% if request.resolver_match.namespace == 'entry' and request.resolver_match.url_name == 'create' %}disabled{% endif %}" href="{% url 'entry:create'%}">Create</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.resolver_match.namespace == 'entry' and request.resolver_match.url_name == 'list' %}disabled{% endif %}" href="{% url 'entry:list'%}">List</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <div class="col-md-9 ml-sm-auto col-lg-10">
+        {% block main %}{% endblock %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

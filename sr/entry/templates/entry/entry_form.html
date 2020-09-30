@@ -1,0 +1,22 @@
+{% extends "entry/layout.html" %}
+
+{% load static %}
+
+{% block main %}
+  <form method="POST">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="{{form.title.id_for_label}}">{{form.title.label}}</label>
+      {{form.title}}
+    </div>
+    <div class="mb-3">
+      <label for="{{form.content.id_for_label}}">{{form.content.label}}</label>
+      {{form.content}}
+    </div>
+    <button class="btn btn-primary" type="submit" value="Save">Create</button>
+  </form>
+{% endblock %}
+
+{% block css %}
+  <link rel="stylesheet" href="{% static "css/entry/layout.css"%}">
+{% endblock %}

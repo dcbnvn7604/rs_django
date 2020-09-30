@@ -8,3 +8,5 @@ RUN apt update && \
     apt install -y gcc libpq-dev && \
     pip install pipenv && \
     pipenv install
+
+ENTRYPOINT ["bash"]

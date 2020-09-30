@@ -22,5 +22,5 @@ from sr.views import SRLoginView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/login/', SRLoginView.as_view()),
-    path('entry/', include('entry.urls'))
+    path('entry/', include('entry.urls', namespace="entry"))
 ]
