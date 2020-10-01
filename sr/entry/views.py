@@ -1,7 +1,7 @@
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView
 from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.urls import reverse
 
 from entry.models import Entry
@@ -14,7 +14,7 @@ class EntryListView(ListView):
     template_name = 'entry/list.html'
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator([login_required, permission_required('entry.add_entry')], name='dispatch')
 class EntryCreateView(CreateView):
     form_class = EntryForm
     model = Entry

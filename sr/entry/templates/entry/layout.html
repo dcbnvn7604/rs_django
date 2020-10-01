@@ -15,9 +15,11 @@
         <div class="sidebar-content">
           <h6 class="px-3 mt-4 mb-1 text-muted">Entry</h6>
           <ul class="nav flex-column">
+            {% if perms.entry.add_entry %}
             <li class="nav-item">
               <a class="nav-link {% if request.resolver_match.namespace == 'entry' and request.resolver_match.url_name == 'create' %}disabled{% endif %}" href="{% url 'entry:create'%}">Create</a>
             </li>
+            {% endif %}
             <li class="nav-item">
               <a class="nav-link {% if request.resolver_match.namespace == 'entry' and request.resolver_match.url_name == 'list' %}disabled{% endif %}" href="{% url 'entry:list'%}">List</a>
             </li>
