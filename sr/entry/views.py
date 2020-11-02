@@ -1,5 +1,5 @@
 from django.views.generic.list import ListView
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required, permission_required
 from django.urls import reverse
@@ -29,3 +29,13 @@ class EntryCreateView(CreateView):
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
+
+
+@method_decorator([login_required, permission_required('entry.change_entry')], name='dispatch')
+class EntryUpdateView(UpdateView):
+    form_class = EntryForm
+    model = Entry
+    pk_url_kwarg = 'id'
+
+    def get_success_url(self):
+        return reverse('entry:list')

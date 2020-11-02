@@ -13,7 +13,11 @@
       <label for="{{form.content.id_for_label}}">{{form.content.label}}</label>
       {{form.content}}
     </div>
-    <button class="btn btn-primary" type="submit" value="Save">Create</button>
+    {% if not form.instance.id %}
+      <button class="btn btn-primary" type="submit" value="Save">Create</button>
+    {% else %}
+      <button class="btn btn-primary" type="submit" value="Save">Update</button>
+    {% endif %}
   </form>
 {% endblock %}
 

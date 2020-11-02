@@ -28,6 +28,11 @@ DEBUG = bool(os.environ['DJANGO_DEBUG']) if 'DJANGO_DEBUG' in os.environ else Fa
 ALLOWED_HOSTS = []
 
 
+
+LOGIN_URL = '/user/login/'
+LOGIN_REDIRECT_URL = '/entry'
+LOGOUT_REDIRECT_URL = '/entry'
+
 # Application definition
 
 INSTALLED_APPS = [

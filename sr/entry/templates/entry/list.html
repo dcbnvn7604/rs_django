@@ -10,6 +10,11 @@
         <div class="card-body">
           <h5 class="card-title">{{entry.title}}</h5>
           <p class="card-text">{{entry.content}}</p>
+          {% if perms.entry.change_entry %}
+          <div class="btn-group">
+            <a href="{% url 'entry:update' entry.id %}" class="btn btn-outline-secondary">Change</a>
+          </div>
+          {% endif %}
         </div>
       </div>
     </div>

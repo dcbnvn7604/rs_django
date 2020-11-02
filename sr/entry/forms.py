@@ -16,6 +16,7 @@ class EntryForm(forms.ModelForm):
 
     def save(self, commit=True):
         entry = super().save(commit=False)
-        entry.user = self.user
+        if not entry.id:
+            entry.user = self.user
         entry.save()
         return entry
