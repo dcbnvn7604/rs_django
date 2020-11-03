@@ -1,5 +1,5 @@
 from django.views.generic.list import ListView
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required, permission_required
 from django.urls import reverse
@@ -39,3 +39,15 @@ class EntryUpdateView(UpdateView):
 
     def get_success_url(self):
         return reverse('entry:list')
+
+
+@method_decorator([login_required, permission_required('entry.delete_entry')], name='dispatch')
+class EntryDeleteView(DeleteView):
+    model = Entry
+    pk_url_kwarg = 'id'
+
+    def get_success_url(self):
+        return reverse('entry:list')
+
+    def post(self, request, *args, **kwargs):
+        return self.delete(request, *args, **kwargs)
