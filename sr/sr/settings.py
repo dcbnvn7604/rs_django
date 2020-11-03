@@ -30,8 +30,8 @@ ALLOWED_HOSTS = []
 
 
 LOGIN_URL = '/user/login/'
-LOGIN_REDIRECT_URL = '/entry'
-LOGOUT_REDIRECT_URL = '/entry'
+LOGIN_REDIRECT_URL = '/entry/'
+LOGOUT_REDIRECT_URL = '/user/login/'
 
 # Application definition
 
@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'entry',
+    'entry.apps.EntryConfig',
 ]
 
 MIDDLEWARE = [
@@ -128,3 +128,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'sr', 'static')]
+
+FIXTURE_DIRS = [os.path.join(BASE_DIR, 'entry', 'fixtures')]
