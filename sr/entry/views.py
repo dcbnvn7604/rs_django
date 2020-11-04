@@ -13,6 +13,12 @@ class EntryListView(ListView):
     model = Entry
     template_name = 'entry/list.html'
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if self.request.GET.get('q', ''):
+            return queryset.search(self.request.GET.get('q'))
+        return queryset
+
 
 @method_decorator([login_required, permission_required('entry.add_entry')], name='dispatch')
 class EntryCreateView(CreateView):

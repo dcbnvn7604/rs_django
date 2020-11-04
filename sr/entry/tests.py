@@ -12,11 +12,20 @@ class TestEntryListView(SRTestCaseInClient):
         self.assertRedirects(response, '/user/login/?next=/entry/', fetch_redirect_response=False)
 
     def test_view(self):
-        self._initial_user()
+        self._login()
 
-        self.client.post('/user/login/', {'username': 'test', 'password': 'testpw'}, follow=False)
         response = self.client.get('/entry/')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
+
+    def test_search(self):
+        self._login()
+
+        Entry.objects.create(id=1, title='title1', content='content1', user=self.user)
+        Entry.objects.create(id=2, title='abc', content='content2', user=self.user)
+
+        response = self.client.get('/entry/?q=abc')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['entry_list']), 1)
 
 
 class TestEntryCreateView(SRTestCaseInClient):
@@ -34,7 +43,7 @@ class TestEntryCreateView(SRTestCaseInClient):
         self._login_user_in_group()
 
         response = self.client.get('/entry/create/', follow=False)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def test_create(self):
         self._login_user_in_group()
@@ -48,7 +57,7 @@ class TestEntryUpdateView(SRTestCaseInClient):
         super().setUp()
 
         self._initial_user()
-        entry = Entry.objects.create(id=1, title='title1', content='content1', user=self.user)
+        Entry.objects.create(id=1, title='title1', content='content1', user=self.user)
 
     def test_login_required(self):
         response = self.client.post('/entry/1/', {'title': 'title 2', 'content': 'content 2'},follow=False)
@@ -144,3 +153,12 @@ class TestEntryViewSetAPI(SRAPITestCase):
 
         response = self.client.delete('/api/entries/1/')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_search(self):
+        self._init_authen()
+
+        Entry.objects.create(id=2, title='abc', content='content2', user=self.user)
+
+        response = self.client.get('/api/entries/?q=abc')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)

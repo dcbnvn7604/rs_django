@@ -12,14 +12,19 @@ class EntryViewSet(viewsets.ModelViewSet):
     serializer_class = EntrySerializer
     permission_classes = [IsAuthenticated]
 
+    def list(self, request, *args, **kwargs):
+        if request.GET.get('q', ''):
+            self.queryset = self.queryset.search(request.GET.get('q'))
+        return super().list(request, *args, **kwargs)
+
     @method_decorator(permission_required('entry.add_entry', raise_exception=True))
-    def create(self, *args, **kargs):
-        return super().create(*args, **kargs)
+    def create(self, *args, **kwargs):
+        return super().create(*args, **kwargs)
 
     @method_decorator(permission_required('entry.change_entry', raise_exception=True))
-    def update(self, *args, **kargs):
-        return super().update(*args, **kargs)
+    def update(self, *args, **kwargs):
+        return super().update(*args, **kwargs)
 
     @method_decorator(permission_required('entry.delete_entry', raise_exception=True))
-    def destroy(self, *args, **kargs):
-        return super().destroy(*args, **kargs)
+    def destroy(self, *args, **kwargs):
+        return super().destroy(*args, **kwargs)
