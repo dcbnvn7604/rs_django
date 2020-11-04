@@ -1,10 +1,9 @@
 from django.test import TestCase
-from rest_framework.test import APITestCase
 from rest_framework import status
 
 from entry.models import Entry
 from entry.views import EntryListView
-from sr.tests import SRTestCaseInClient, SRTestMixin
+from sr.tests import SRTestCaseInClient, SRAPITestCase
 
 
 class TestEntryListView(SRTestCaseInClient):
@@ -93,16 +92,25 @@ class TestEntryDeleteView(SRTestCaseInClient):
         self.assertRedirects(response, '/entry/', fetch_redirect_response=False)
 
 
-class TestEntryViewSetAPI(SRTestMixin, APITestCase):
+class TestEntryViewSetAPI(SRAPITestCase):
     def test_authentication(self):
         response = self.client.get('/api/entries/')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_list(self):
-        self._initial_user()
-
-        response = self.client.post('/api/auth/', {'username': 'test', 'password': 'testpw'})
-        self.client.credentials(HTTP_AUTHORIZATION='Token ' + response.data['token'])
+        self._init_authen()
 
         response = self.client.get('/api/entries/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_create_permission(self):
+        self._init_authen()
+
+        response = self.client.post('/api/entries/', {'title': 'title 2', 'content': 'content 2'})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_create(self):
+        self._init_authen_in_group()
+
+        response = self.client.post('/api/entries/', {'title': 'title 2', 'content': 'content 2'})
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)

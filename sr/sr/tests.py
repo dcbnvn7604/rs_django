@@ -11,6 +11,11 @@ class SRTestMixin:
         if not self.user:
             self.user = User.objects.create_user(username='test', email='test@mail.com', password='testpw')
 
+    def _join_group(self):
+        if self.user:
+            group = Group.objects.get(name='editor') 
+            self.user.groups.add(group)
+
 
 class SRTestCaseInClient(SRTestMixin, TestCase):
     def _login(self):
@@ -19,11 +24,22 @@ class SRTestCaseInClient(SRTestMixin, TestCase):
 
     def _login_user_in_group(self):
         self._login()
-        group = Group.objects.get(name='editor') 
-        self.user.groups.add(group)
+        self._join_group()
 
     def setUp(self):
         self.client = Client()
+
+
+class SRAPITestCase(SRTestMixin, APITestCase):
+    def _init_authen(self):
+        self._initial_user()
+
+        response = self.client.post('/api/auth/', {'username': 'test', 'password': 'testpw'})
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + response.data['token'])
+
+    def _init_authen_in_group(self):
+        self._init_authen()
+        self._join_group()
 
 
 class TestAuthentication(SRTestCaseInClient):
