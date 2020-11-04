@@ -17,8 +17,15 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic.base import RedirectView
 from django.contrib.auth.views import LogoutView
+from rest_framework import routers
+from rest_framework.authtoken import views
 
 from sr.views import SRLoginView
+from entry.rest_views import EntryViewSet
+
+
+router = routers.DefaultRouter()
+router.register('entries', EntryViewSet)
 
 
 urlpatterns = [
@@ -26,5 +33,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/login/', SRLoginView.as_view()),
     path('user/logout/', LogoutView.as_view(), name="logout"),
-    path('entry/', include('entry.urls', namespace="entry"))
+    path('entry/', include('entry.urls', namespace="entry")),
+    path('api/', include(router.urls)),
+    path('api/auth/', views.obtain_auth_token)
 ]
