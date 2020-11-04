@@ -1,8 +1,10 @@
 from django.test import TestCase
+from rest_framework.test import APITestCase
+from rest_framework import status
 
 from entry.models import Entry
 from entry.views import EntryListView
-from sr.tests import SRTestCaseInClient
+from sr.tests import SRTestCaseInClient, SRTestMixin
 
 
 class TestEntryListView(SRTestCaseInClient):
@@ -89,3 +91,18 @@ class TestEntryDeleteView(SRTestCaseInClient):
 
         response = self.client.post('/entry/1/delete/', follow=False)
         self.assertRedirects(response, '/entry/', fetch_redirect_response=False)
+
+
+class TestEntryViewSetAPI(SRTestMixin, APITestCase):
+    def test_authentication(self):
+        response = self.client.get('/api/entries/')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_list(self):
+        self._initial_user()
+
+        response = self.client.post('/api/auth/', {'username': 'test', 'password': 'testpw'})
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + response.data['token'])
+
+        response = self.client.get('/api/entries/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
