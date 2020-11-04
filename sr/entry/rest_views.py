@@ -19,3 +19,7 @@ class EntryViewSet(viewsets.ModelViewSet):
     @method_decorator(permission_required('entry.change_entry', raise_exception=True))
     def update(self, *args, **kargs):
         return super().update(*args, **kargs)
+
+    @method_decorator(permission_required('entry.delete_entry', raise_exception=True))
+    def destroy(self, *args, **kargs):
+        return super().destroy(*args, **kargs)

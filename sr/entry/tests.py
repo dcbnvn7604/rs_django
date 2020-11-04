@@ -132,3 +132,15 @@ class TestEntryViewSetAPI(SRAPITestCase):
 
         response = self.client.put('/api/entries/1/', {'title': 'title 2', 'content': 'content 2'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_delete_permission(self):
+        self._init_authen()
+
+        response = self.client.delete('/api/entries/1/')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_delete(self):
+        self._init_authen_in_group()
+
+        response = self.client.delete('/api/entries/1/')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
