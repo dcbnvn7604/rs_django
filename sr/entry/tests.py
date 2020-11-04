@@ -72,7 +72,7 @@ class TestEntryDeleteView(SRTestCaseInClient):
         super().setUp()
 
         self._initial_user()
-        entry = Entry.objects.create(id=1, title='title1', content='content1', user=self.user)
+        Entry.objects.create(id=1, title='title1', content='content1', user=self.user)
 
     def test_login_required(self):
         response = self.client.post('/entry/1/delete/', follow=False)
@@ -93,6 +93,12 @@ class TestEntryDeleteView(SRTestCaseInClient):
 
 
 class TestEntryViewSetAPI(SRAPITestCase):
+    def setUp(self):
+        super().setUp()
+
+        self._initial_user()
+        Entry.objects.create(id=1, title='title1', content='content1', user=self.user)
+
     def test_authentication(self):
         response = self.client.get('/api/entries/')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -114,3 +120,15 @@ class TestEntryViewSetAPI(SRAPITestCase):
 
         response = self.client.post('/api/entries/', {'title': 'title 2', 'content': 'content 2'})
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_update_permission(self):
+        self._init_authen()
+
+        response = self.client.put('/api/entries/1/', {'title': 'title 2', 'content': 'content 2'})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_update(self):
+        self._init_authen_in_group()
+
+        response = self.client.put('/api/entries/1/', {'title': 'title 2', 'content': 'content 2'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
