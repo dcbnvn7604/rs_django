@@ -7,6 +7,8 @@ def graphql_login_required(func):
         user_auth_tuple = authenticator.authenticate(info.context)
         if user_auth_tuple is None:
             return None
+        else:
+            info.context.user = user_auth_tuple[0]
         return func(root, info, *args, **kwargs)
     return _func
 
@@ -18,8 +20,8 @@ def graphql_permission_required(perm):
         perms = perm
     def _decorator(func):
         def _func(root, info, *args, **kwargs):
-            if not user.has_perms(perms):
+            if not info.context.user.has_perms(perms):
                 return None
             return func(root, info, *args, **kwargs)
-        return _func()
+        return _func
     return _decorator

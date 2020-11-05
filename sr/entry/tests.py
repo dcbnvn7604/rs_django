@@ -169,7 +169,7 @@ class TestGraphql(SRAPITestCase):
         super().setUp()
 
         self._initial_user()
-        Entry.objects.create(id=1, title='title1', content='content1', user=self.user)
+        Entry.objects.create(id=2, title='title1', content='content1', user=self.user)
 
     def test_authentication(self):
         query = '''
@@ -201,4 +201,56 @@ class TestGraphql(SRAPITestCase):
         response = self.client.post('/graphql/', {"query": query})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         response = response.json()
-        self.assertEqual(response['data']['entries'][0]['id'], '1')
+        self.assertEqual(response['data']['entries'][0]['id'], '2')
+
+    def test_create_authentication(self):
+        query = '''
+            mutation {
+                createEntry(title: "title 2", content: "content 2") {
+                    entry {
+                        id
+                    }
+                    ok
+                }
+            }
+        '''
+        response = self.client.post('/graphql/', {"query": query})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = response.json()
+        self.assertIsNone(response['data']['createEntry'])
+
+    def test_create_permission(self):
+        self._init_authen()
+
+        query = '''
+            mutation {
+                createEntry(title: "title 2", content: "content 2") {
+                    entry {
+                        id
+                    }
+                    ok
+                }
+            }
+        '''
+        response = self.client.post('/graphql/', {"query": query})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = response.json()
+        self.assertIsNone(response['data']['createEntry'])
+
+    def test_create(self):
+        self._init_authen_in_group()
+
+        query = '''
+            mutation {
+                createEntry(title: "title 2", content: "content 2") {
+                    entry {
+                        id
+                    }
+                    ok
+                }
+            }
+        '''
+        response = self.client.post('/graphql/', {"query": query})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = response.json()
+        self.assertTrue(response['data']['createEntry']['ok'])
