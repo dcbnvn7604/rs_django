@@ -9,6 +9,7 @@ verify_ssl = true
 django = "~=3.0"
 psycopg2 = "*"
 djangorestframework = "*"
+graphene-django = "*"
 
 [requires]
 python_version = "3.7"

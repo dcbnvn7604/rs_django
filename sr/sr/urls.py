@@ -17,8 +17,10 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic.base import RedirectView
 from django.contrib.auth.views import LogoutView
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import routers
 from rest_framework.authtoken import views
+from graphene_django.views import GraphQLView
 
 from sr.views import SRLoginView
 from entry.rest_views import EntryViewSet
@@ -35,5 +37,6 @@ urlpatterns = [
     path('user/logout/', LogoutView.as_view(), name="logout"),
     path('entry/', include('entry.urls', namespace="entry")),
     path('api/', include(router.urls)),
-    path('api/auth/', views.obtain_auth_token)
+    path('api/auth/', views.obtain_auth_token),
+    path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=True)))
 ]

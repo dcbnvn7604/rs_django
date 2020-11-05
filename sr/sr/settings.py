@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'entry.apps.EntryConfig',
+    'graphene_django',
 ]
 
 MIDDLEWARE = [
@@ -133,4 +134,8 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'sr', 'static')]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': ['rest_framework.authentication.TokenAuthentication']
+}
+
+GRAPHENE = {
+    "SCHEMA": 'sr.schema.schema'
 }

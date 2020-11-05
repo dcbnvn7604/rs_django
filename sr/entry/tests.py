@@ -162,3 +162,43 @@ class TestEntryViewSetAPI(SRAPITestCase):
         response = self.client.get('/api/entries/?q=abc')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
+
+
+class TestGraphql(SRAPITestCase):
+    def setUp(self):
+        super().setUp()
+
+        self._initial_user()
+        Entry.objects.create(id=1, title='title1', content='content1', user=self.user)
+
+    def test_authentication(self):
+        query = '''
+            query {
+                entries {
+                    id
+                    title
+                    content
+                }
+            }
+        '''
+        response = self.client.post('/graphql/', {"query": query})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = response.json()
+        self.assertIsNone(response['data']['entries'])
+
+    def test_entries(self):
+        self._init_authen()
+
+        query = '''
+            query {
+                entries {
+                    id
+                    title
+                    content
+                }
+            }
+        '''
+        response = self.client.post('/graphql/', {"query": query})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = response.json()
+        self.assertEqual(response['data']['entries'][0]['id'], '1')
