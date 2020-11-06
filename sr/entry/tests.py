@@ -254,3 +254,61 @@ class TestGraphql(SRAPITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         response = response.json()
         self.assertTrue(response['data']['createEntry']['ok'])
+
+    def test_update_authentication(self):
+        query = '''
+            mutation {
+                updateEntry(id: 2, title: "title 2", content: "content 2") {
+                    ok
+                }
+            }
+        '''
+        response = self.client.post('/graphql/', {"query": query})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = response.json()
+        self.assertIsNone(response['data']['updateEntry'])
+
+    def test_update_permission(self):
+        self._init_authen()
+
+        query = '''
+            mutation {
+                updateEntry(id:2, title: "title 2", content: "content 2") {
+                    ok
+                }
+            }
+        '''
+        response = self.client.post('/graphql/', {"query": query})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = response.json()
+        self.assertIsNone(response['data']['updateEntry'])
+
+    def test_update(self):
+        self._init_authen_in_group()
+
+        query = '''
+            mutation {
+                updateEntry(id: 2, title: "title 1", content: "content 1") {
+                    ok
+                }
+            }
+        '''
+        response = self.client.post('/graphql/', {"query": query})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = response.json()
+        self.assertTrue(response['data']['updateEntry']['ok'])
+
+    def test_update_fail(self):
+        self._init_authen_in_group()
+
+        query = '''
+            mutation {
+                updateEntry(id: 1, title: "title 1", content: "content 1") {
+                    ok
+                }
+            }
+        '''
+        response = self.client.post('/graphql/', {"query": query})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = response.json()
+        self.assertFalse(response['data']['updateEntry']['ok'])
