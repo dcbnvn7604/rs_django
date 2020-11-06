@@ -58,6 +58,24 @@ class UpdateEntry(graphene.Mutation):
         return UpdateEntry(ok=True)
 
 
+class DeleteEntry(graphene.Mutation):
+    class Arguments:
+        id = graphene.Int()
+
+    ok = graphene.Boolean()
+
+    @graphql_login_required
+    @graphql_permission_required(['entry.delete_entry'])
+    def mutate(root, info, id):
+        try:
+            entry = Entry.objects.get(pk=id)
+        except Entry.DoesNotExist:
+            return DeleteEntry(ok=False)
+
+        entry.delete()
+        return DeleteEntry(ok=True)
+
 class Mutation(graphene.ObjectType):
     create_entry = CreateEntry.Field()
     update_entry = UpdateEntry.Field()
+    delete_entry = DeleteEntry.Field()

@@ -312,3 +312,61 @@ class TestGraphql(SRAPITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         response = response.json()
         self.assertFalse(response['data']['updateEntry']['ok'])
+
+    def test_delete_authentication(self):
+        query = '''
+            mutation {
+                deleteEntry(id: 2) {
+                    ok
+                }
+            }
+        '''
+        response = self.client.post('/graphql/', {"query": query})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = response.json()
+        self.assertIsNone(response['data']['deleteEntry'])
+
+    def test_delete_permission(self):
+        self._init_authen()
+
+        query = '''
+            mutation {
+                deleteEntry(id: 2) {
+                    ok
+                }
+            }
+        '''
+        response = self.client.post('/graphql/', {"query": query})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = response.json()
+        self.assertIsNone(response['data']['deleteEntry'])
+
+    def test_delete(self):
+        self._init_authen_in_group()
+
+        query = '''
+            mutation {
+                deleteEntry(id: 2) {
+                    ok
+                }
+            }
+        '''
+        response = self.client.post('/graphql/', {"query": query})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = response.json()
+        self.assertTrue(response['data']['deleteEntry']['ok'])
+
+    def test_delete_fail(self):
+        self._init_authen_in_group()
+
+        query = '''
+            mutation {
+                deleteEntry(id: 1) {
+                    ok
+                }
+            }
+        '''
+        response = self.client.post('/graphql/', {"query": query})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = response.json()
+        self.assertFalse(response['data']['deleteEntry']['ok'])
